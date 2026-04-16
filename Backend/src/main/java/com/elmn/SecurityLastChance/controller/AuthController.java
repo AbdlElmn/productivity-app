@@ -2,43 +2,37 @@ package com.elmn.SecurityLastChance.controller;
 
 import com.elmn.SecurityLastChance.dto.auth.AuthRequest;
 import com.elmn.SecurityLastChance.dto.auth.AuthResponse;
+import com.elmn.SecurityLastChance.dto.auth.AuthUserResponse;
 import com.elmn.SecurityLastChance.dto.auth.SignupRequest;
-import com.elmn.SecurityLastChance.model.User;
 import com.elmn.SecurityLastChance.service.AuthService;
-import com.elmn.SecurityLastChance.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
-public class UserController {
+public class AuthController {
 
-    private final UserService userService;
     private final AuthService authService;
 
-    @GetMapping("/testing")
-    public String test() {
-        return "Success";
-    }
-
-    @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @PostMapping("/add-user")
-    public ResponseEntity<AuthResponse> registerUser(@RequestBody SignupRequest request) {
-        return ResponseEntity.ok(authService.signup(request));
+    @PostMapping("/signup")
+    public ResponseEntity<AuthResponse> signup(@RequestBody SignupRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<AuthUserResponse> me() {
+        return ResponseEntity.ok(authService.getCurrentUser());
     }
 }
