@@ -2,6 +2,8 @@ package com.elmn.SecurityLastChance.service;
 
 import com.elmn.SecurityLastChance.dto.admin.AdminStatsResponse;
 import com.elmn.SecurityLastChance.enums.Role;
+import com.elmn.SecurityLastChance.exception.ForbiddenException;
+import com.elmn.SecurityLastChance.exception.UnauthorizedException;
 import com.elmn.SecurityLastChance.model.User;
 import com.elmn.SecurityLastChance.repository.CategoryRepository;
 import com.elmn.SecurityLastChance.repository.SessionRepository;
@@ -59,17 +61,17 @@ public class AdminStatsService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new RuntimeException("Authenticated user not found.");
+            throw new UnauthorizedException("Authenticated user not found.");
         }
 
         String email = authentication.getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + email));
+                .orElseThrow(() -> new UnauthorizedException("Authenticated user not found: " + email));
     }
 
     private void ensureAdmin(User user) {
         if (user.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Access denied. Admin role is required.");
+            throw new ForbiddenException("Access denied. Admin role is required.");
         }
     }
 }

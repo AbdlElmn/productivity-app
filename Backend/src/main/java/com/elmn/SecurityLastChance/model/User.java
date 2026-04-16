@@ -1,20 +1,8 @@
 package com.elmn.SecurityLastChance.model;
 
 import com.elmn.SecurityLastChance.enums.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,15 +23,19 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // username shown in UI (display name)
     @Column(nullable = false, unique = true)
     private String username;
 
+    // used for login + email verification
     @Column(nullable = false, unique = true)
     private String email;
 
+    // hashed password (BCrypt)
     @Column(nullable = false)
     private String password;
 
+    // role (USER / ADMIN)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
@@ -51,12 +43,20 @@ public class User implements UserDetails {
 
     private LocalDateTime createdAt;
 
-    // Relationships
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean emailVerified = false;
+
+    private String verificationCode;
+
+    private LocalDateTime verificationCodeExpiry;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Session> sessions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Category> categories;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -68,6 +68,7 @@ public class User implements UserDetails {
         return email;
     }
 
+    // custom method for UI
     public String getDisplayName() {
         return username;
     }
@@ -89,6 +90,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return emailVerified;
     }
 }

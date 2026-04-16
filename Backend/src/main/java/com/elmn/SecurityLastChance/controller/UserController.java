@@ -2,7 +2,8 @@ package com.elmn.SecurityLastChance.controller;
 
 import com.elmn.SecurityLastChance.dto.auth.AuthRequest;
 import com.elmn.SecurityLastChance.dto.auth.AuthResponse;
-import com.elmn.SecurityLastChance.dto.auth.SignupRequest;
+import com.elmn.SecurityLastChance.dto.auth.RegisterRequest;
+import com.elmn.SecurityLastChance.dto.auth.SimpleMessageResponse;
 import com.elmn.SecurityLastChance.model.User;
 import com.elmn.SecurityLastChance.service.AuthService;
 import com.elmn.SecurityLastChance.service.UserService;
@@ -33,8 +34,8 @@ public class UserController {
     }
 
     @PostMapping("/add-user")
-    public ResponseEntity<AuthResponse> registerUser(@RequestBody SignupRequest request) {
-        return ResponseEntity.ok(authService.signup(request));
+    public ResponseEntity<SimpleMessageResponse> registerUser(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")

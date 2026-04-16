@@ -5,6 +5,10 @@ import com.elmn.SecurityLastChance.dto.session.StartSessionRequest;
 import com.elmn.SecurityLastChance.dto.session.StopSessionRequest;
 import com.elmn.SecurityLastChance.dto.session.TotalFocusTimeResponse;
 import com.elmn.SecurityLastChance.dto.session.TodaySessionsResponse;
+import com.elmn.SecurityLastChance.exception.BadRequestException;
+import com.elmn.SecurityLastChance.exception.ConflictException;
+import com.elmn.SecurityLastChance.exception.NotFoundException;
+import com.elmn.SecurityLastChance.exception.UnauthorizedException;
 import com.elmn.SecurityLastChance.model.Category;
 import com.elmn.SecurityLastChance.model.Session;
 import com.elmn.SecurityLastChance.model.User;
@@ -38,13 +42,13 @@ public class SessionService {
 
         sessionRepository.findFirstByUserIdAndEndTimeIsNullOrderByStartTimeDesc(userId)
                 .ifPresent(session -> {
-                    throw new RuntimeException("You already have an active session. Stop it before starting a new one.");
+                    throw new ConflictException("You already have an active session. Stop it before starting a new one.");
                 });
 
         Category category = null;
         if (request.categoryId() != null) {
             category = categoryRepository.findByIdAndUserId(request.categoryId(), userId)
-                    .orElseThrow(() -> new RuntimeException("Category not found for user: " + request.categoryId()));
+                    .orElseThrow(() -> new NotFoundException("Category not found for user: " + request.categoryId()));
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -64,11 +68,11 @@ public class SessionService {
         Long userId = getCurrentUser().getId();
 
         Session activeSession = sessionRepository.findFirstByUserIdAndEndTimeIsNullOrderByStartTimeDesc(userId)
-                .orElseThrow(() -> new RuntimeException("No active session found for user: " + userId));
+                .orElseThrow(() -> new NotFoundException("No active session found for user: " + userId));
 
         LocalDateTime endTime = LocalDateTime.now();
         if (endTime.isBefore(activeSession.getStartTime())) {
-            throw new RuntimeException("Session end time cannot be before start time.");
+            throw new BadRequestException("Session end time cannot be before start time.");
         }
 
         int durationSec = Math.toIntExact(Duration.between(activeSession.getStartTime(), endTime).getSeconds());
@@ -121,12 +125,12 @@ public class SessionService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new RuntimeException("Authenticated user not found.");
+            throw new UnauthorizedException("Authenticated user not found.");
         }
 
         String email = authentication.getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + email));
+                .orElseThrow(() -> new UnauthorizedException("Authenticated user not found: " + email));
     }
 
     private String cleanText(String value) {

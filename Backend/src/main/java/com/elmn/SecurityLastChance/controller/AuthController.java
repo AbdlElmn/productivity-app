@@ -3,7 +3,10 @@ package com.elmn.SecurityLastChance.controller;
 import com.elmn.SecurityLastChance.dto.auth.AuthRequest;
 import com.elmn.SecurityLastChance.dto.auth.AuthResponse;
 import com.elmn.SecurityLastChance.dto.auth.AuthUserResponse;
-import com.elmn.SecurityLastChance.dto.auth.SignupRequest;
+import com.elmn.SecurityLastChance.dto.auth.RegisterRequest;
+import com.elmn.SecurityLastChance.dto.auth.ResendCodeRequest;
+import com.elmn.SecurityLastChance.dto.auth.SimpleMessageResponse;
+import com.elmn.SecurityLastChance.dto.auth.VerifyEmailRequest;
 import com.elmn.SecurityLastChance.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,9 +24,19 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup(@RequestBody SignupRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signup(request));
+    @PostMapping("/register")
+    public ResponseEntity<SimpleMessageResponse> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<SimpleMessageResponse> verifyEmail(@RequestBody VerifyEmailRequest request) {
+        return ResponseEntity.ok(authService.verifyEmail(request));
+    }
+
+    @PostMapping("/resend-code")
+    public ResponseEntity<SimpleMessageResponse> resendCode(@RequestBody ResendCodeRequest request) {
+        return ResponseEntity.ok(authService.resendCode(request));
     }
 
     @PostMapping("/login")

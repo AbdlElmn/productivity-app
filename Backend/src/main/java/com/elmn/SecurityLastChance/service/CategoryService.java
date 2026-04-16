@@ -3,6 +3,10 @@ package com.elmn.SecurityLastChance.service;
 import com.elmn.SecurityLastChance.dto.category.CategoryResponse;
 import com.elmn.SecurityLastChance.dto.category.CreateCategoryRequest;
 import com.elmn.SecurityLastChance.dto.category.UpdateCategoryRequest;
+import com.elmn.SecurityLastChance.exception.BadRequestException;
+import com.elmn.SecurityLastChance.exception.ConflictException;
+import com.elmn.SecurityLastChance.exception.NotFoundException;
+import com.elmn.SecurityLastChance.exception.UnauthorizedException;
 import com.elmn.SecurityLastChance.model.Category;
 import com.elmn.SecurityLastChance.model.User;
 import com.elmn.SecurityLastChance.repository.CategoryRepository;
@@ -49,7 +53,7 @@ public class CategoryService {
         String color = normalizeColor(request.color());
 
         if (categoryRepository.existsByUserIdAndNameIgnoreCase(user.getId(), name)) {
-            throw new RuntimeException("A category with this name already exists.");
+            throw new ConflictException("A category with this name already exists.");
         }
 
         Category category = Category.builder()
@@ -69,7 +73,7 @@ public class CategoryService {
         String color = normalizeColor(request.color());
 
         if (categoryRepository.existsByUserIdAndNameIgnoreCaseAndIdNot(category.getUser().getId(), name, categoryId)) {
-            throw new RuntimeException("A category with this name already exists.");
+            throw new ConflictException("A category with this name already exists.");
         }
 
         category.setName(name);
@@ -89,29 +93,29 @@ public class CategoryService {
 
     private Category getCategoryForCurrentUser(Long categoryId) {
         if (categoryId == null) {
-            throw new RuntimeException("Category ID is required.");
+            throw new BadRequestException("Category ID is required.");
         }
 
         Long userId = getCurrentUser().getId();
         return categoryRepository.findByIdAndUserId(categoryId, userId)
-                .orElseThrow(() -> new RuntimeException("Category not found for the authenticated user."));
+                .orElseThrow(() -> new NotFoundException("Category not found for the authenticated user."));
     }
 
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new RuntimeException("Authenticated user not found.");
+            throw new UnauthorizedException("Authenticated user not found.");
         }
 
         String email = authentication.getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + email));
+                .orElseThrow(() -> new UnauthorizedException("Authenticated user not found: " + email));
     }
 
     private String normalizeRequiredName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new RuntimeException("Category name is required.");
+            throw new BadRequestException("Category name is required.");
         }
 
         return name.trim();
@@ -124,7 +128,7 @@ public class CategoryService {
 
         String normalizedColor = color.trim();
         if (!HEX_COLOR_PATTERN.matcher(normalizedColor).matches()) {
-            throw new RuntimeException("Category color must be a valid hex value like #4CAF50.");
+            throw new BadRequestException("Category color must be a valid hex value like #4CAF50.");
         }
 
         return normalizedColor.toUpperCase();
