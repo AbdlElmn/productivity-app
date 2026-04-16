@@ -1,0 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+}
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply m-0 bg-[#07111f] font-sans text-slate-100 antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(139, 92, 246, 0.16), transparent 28%),
+      radial-gradient(circle at top right, rgba(20, 184, 166, 0.14), transparent 22%),
+      linear-gradient(180deg, #050d18 0%, #07111f 44%, #0a1322 100%);
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  ::selection {
+    background: rgba(139, 92, 246, 0.34);
+    color: white;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
