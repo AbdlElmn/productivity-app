@@ -6,7 +6,7 @@ import { Field, Input } from "../components/ui/Field";
 import { useAuth } from "../context/AuthContext";
 
 export default function SignUpPage() {
-  const { signup } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -22,8 +22,14 @@ export default function SignUpPage() {
     setSubmitting(true);
 
     try {
-      await signup(form);
-      navigate("/app", { replace: true });
+      const response = await register(form);
+      navigate("/verify-email", {
+        replace: true,
+        state: {
+          email: form.email.trim().toLowerCase(),
+          message: response?.message,
+        },
+      });
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -35,7 +41,7 @@ export default function SignUpPage() {
     <AuthShell
       eyebrow="Create account"
       title="Get started"
-      description="Set up your workspace in a minute and begin tracking focused work right away."
+      description="Create your account, then verify your email with the 6-digit code we send you."
       alternateLabel="Already registered?"
       alternateTo="/signin"
       alternateAction="Sign in"

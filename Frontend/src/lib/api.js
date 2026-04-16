@@ -1,5 +1,14 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
+export class ApiError extends Error {
+  constructor(message, status, payload) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.payload = payload;
+  }
+}
+
 export async function apiRequest(path, { method = "GET", token, body } = {}) {
   const headers = {};
 
@@ -27,7 +36,7 @@ export async function apiRequest(path, { method = "GET", token, body } = {}) {
       typeof payload === "string"
         ? payload
         : payload.message || payload.error || "Request failed.";
-    throw new Error(message);
+    throw new ApiError(message, response.status, payload);
   }
 
   return payload;

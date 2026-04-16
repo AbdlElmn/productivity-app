@@ -22,9 +22,30 @@ export function Input({ className, ...props }) {
 
 export function Select({ className, children, ...props }) {
   return (
-    <select className={cn(controlClasses, "appearance-none", className)} {...props}>
-      {children}
-    </select>
+    <div className="group relative">
+      <select
+        className={cn(controlClasses, "appearance-none pr-11", className)}
+        {...props}
+      >
+        {children}
+      </select>
+      <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400 transition-colors group-focus-within:text-violet-300">
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          aria-hidden="true"
+          className="h-4 w-4"
+        >
+          <path
+            d="M5 7.5L10 12.5L15 7.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+    </div>
   );
 }
 

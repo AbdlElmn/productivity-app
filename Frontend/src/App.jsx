@@ -11,6 +11,7 @@ import HomePage from "./pages/HomePage";
 import SessionsPage from "./pages/SessionsPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 function PublicOnly({ children }) {
   const { isAuthenticated, isAdmin, loading } = useAuth();
@@ -50,6 +51,14 @@ export default function App() {
         element={
           <PublicOnly>
             <SignUpPage />
+          </PublicOnly>
+        }
+      />
+      <Route
+        path="/verify-email"
+        element={
+          <PublicOnly>
+            <VerifyEmailPage />
           </PublicOnly>
         }
       />

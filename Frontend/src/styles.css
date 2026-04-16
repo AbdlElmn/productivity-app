@@ -36,6 +36,25 @@
     font: inherit;
   }
 
+  select {
+    color-scheme: dark;
+  }
+
+  select option,
+  select optgroup {
+    background-color: #0b1728;
+    color: #e2e8f0;
+  }
+
+  select option:checked {
+    background-color: #1d4fae;
+    color: #ffffff;
+  }
+
+  select option:disabled {
+    color: #64748b;
+  }
+
   ::selection {
     background: rgba(139, 92, 246, 0.34);
     color: white;

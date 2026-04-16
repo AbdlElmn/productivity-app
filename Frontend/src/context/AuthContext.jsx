@@ -106,13 +106,25 @@ export function AuthProvider({ children }) {
     return response;
   };
 
-  const signup = async (payload) => {
-    const response = await apiRequest("/auth/signup", {
+  const register = async (payload) => {
+    return apiRequest("/auth/register", {
       method: "POST",
       body: payload,
     });
-    setSession(response);
-    return response;
+  };
+
+  const verifyEmail = async (payload) => {
+    return apiRequest("/auth/verify-email", {
+      method: "POST",
+      body: payload,
+    });
+  };
+
+  const resendVerificationCode = async (email) => {
+    return apiRequest("/auth/resend-code", {
+      method: "POST",
+      body: { email },
+    });
   };
 
   const logout = () => {
@@ -127,7 +139,9 @@ export function AuthProvider({ children }) {
     isAuthenticated: Boolean(session?.token && session?.user),
     isAdmin: session?.user?.role === "ADMIN",
     login,
-    signup,
+    register,
+    verifyEmail,
+    resendVerificationCode,
     logout,
   };
 
