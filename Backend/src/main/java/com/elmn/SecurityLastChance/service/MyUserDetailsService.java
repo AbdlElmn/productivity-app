@@ -1,6 +1,6 @@
 package com.elmn.SecurityLastChance.service;
 
-import com.elmn.SecurityLastChance.repo.UserRepo;
+import com.elmn.SecurityLastChance.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    private final UserRepo userRepo;
+    private final UserRepository userRepository;
 
-    public MyUserDetailsService(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public MyUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }
 }

@@ -2,29 +2,35 @@ package com.elmn.SecurityLastChance.service;
 
 
 import com.elmn.SecurityLastChance.model.User;
-import com.elmn.SecurityLastChance.repo.UserRepo;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.elmn.SecurityLastChance.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class UserService {
 
-    private final UserRepo userRepo;
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User registerUser(User user){
-        user.setPassword(encoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        user.setEmail(user.getEmail().trim().toLowerCase());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(LocalDateTime.now());
+        }
+        return userRepository.save(user);
     }
 
     public List<User> getAllUsers() {
-        return userRepo.findAll();
+        return userRepository.findAll();
     }
 }
 
